@@ -1,0 +1,18 @@
+steps:
+  # Build the docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/nash-ai-lab/safe-qr-codes/backend', '.']
+
+  # Push the docker image to the Google Artifacts Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/nash-ai-lab/safe-qr-codes/backend']
+
+  # Deploy to Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args: 
+      - 'run'
+      - 'deploy'
+      - 'safe-qr-codes-backend'
+      - '--image=us-central1-docker.pkg.dev/nash-ai-lab/safe-qr-codes/backend'
+      - '--platform=managed'
+      - '--region=us-central1'
