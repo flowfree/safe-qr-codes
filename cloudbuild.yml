@@ -9,8 +9,8 @@ steps:
 
   # Deploy to Google Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
     args: 
+      - 'gcloud'
       - 'run'
       - 'deploy'
       - 'safe-qr-codes-backend'
