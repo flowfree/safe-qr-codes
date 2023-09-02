@@ -20,11 +20,6 @@ def home():
     }
 
 
-@app.get('/ping')
-def ping():
-    return 'PONG'
-
-
 def read_pdf(filename):
     return {'message': 'PDF file processed'}
 
