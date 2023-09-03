@@ -3,7 +3,8 @@ steps:
   ########## BACKEND ##########
 
   # Build the docker image
-  - name: 'gcr.io/cloud-builders/docker'
+  - id: 'Backend: build the Docker image'
+    name: 'gcr.io/cloud-builders/docker'
     dir: 'backend'
     args: 
       - 'build'
@@ -12,13 +13,15 @@ steps:
       - '.'
 
   # Push the docker image to the Google Artifacts Registry
-  - name: 'gcr.io/cloud-builders/docker'
+  - id: 'Backend: push to Google Artifacts Registry'
+    name: 'gcr.io/cloud-builders/docker'
     args: 
       - 'push'
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/backend'
 
   # Deploy to Google Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - id: 'Backend: deploy to Cloud Run'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     args: 
       - 'gcloud'
       - 'run'
@@ -27,6 +30,7 @@ steps:
       - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/backend'
       - '--platform=managed'
       - '--region=$LOCATION'
+      - '--allow-unauthenticated'
 
   ########## FRONTEND ##########
 
@@ -55,6 +59,7 @@ steps:
       - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/frontend'
       - '--platform=managed'
       - '--region=$LOCATION'
+      - '--allow-unauthenticated'
 
 substitutions:
   _ARTIFACTS_REPO: 'safe-qr-codes'
