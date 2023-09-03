@@ -1,4 +1,7 @@
 steps:
+
+  ########## BACKEND ##########
+
   # Build the docker image
   - name: 'gcr.io/cloud-builders/docker'
     dir: 'backend'
@@ -22,6 +25,34 @@ steps:
       - 'deploy'
       - '${_ARTIFACTS_REPO}-backend'
       - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/backend'
+      - '--platform=managed'
+      - '--region=$LOCATION'
+
+  ########## FRONTEND ##########
+
+  # Build the docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: 'frontend'
+    args: 
+      - 'build'
+      - '-t'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/frontend'
+      - '.'
+
+  # Push the docker image to the Google Artifacts Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'push'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/frontend'
+
+  # Deploy to Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args: 
+      - 'gcloud'
+      - 'run'
+      - 'deploy'
+      - '${_ARTIFACTS_REPO}-frontend'
+      - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/frontend'
       - '--platform=managed'
       - '--region=$LOCATION'
 
