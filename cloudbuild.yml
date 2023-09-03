@@ -3,7 +3,7 @@ steps:
   ########## BACKEND ##########
 
   # Build the docker image
-  - id: 'Backend: build the Docker image'
+  - id: '[Backend] Build the Docker image'
     name: 'gcr.io/cloud-builders/docker'
     dir: 'backend'
     args: 
@@ -13,14 +13,14 @@ steps:
       - '.'
 
   # Push the docker image to the Google Artifacts Registry
-  - id: 'Backend: push to Google Artifacts Registry'
+  - id: '[Backend] Push to Artifacts Registry'
     name: 'gcr.io/cloud-builders/docker'
     args: 
       - 'push'
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/backend'
 
   # Deploy to Google Cloud Run
-  - id: 'Backend: deploy to Cloud Run'
+  - id: '[Backend] Deploy to Cloud Run'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     args: 
       - 'gcloud'
@@ -35,7 +35,8 @@ steps:
   ########## FRONTEND ##########
 
   # Build the docker image
-  - name: 'gcr.io/cloud-builders/docker'
+  - id: '[Frontend] Build the docker image'
+    name: 'gcr.io/cloud-builders/docker'
     dir: 'frontend'
     args: 
       - 'build'
@@ -44,13 +45,15 @@ steps:
       - '.'
 
   # Push the docker image to the Google Artifacts Registry
-  - name: 'gcr.io/cloud-builders/docker'
+  - id: '[Frontend] Push to Artifacts Registry'
+    name: 'gcr.io/cloud-builders/docker'
     args: 
       - 'push'
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/frontend'
 
   # Deploy to Google Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - id: '[Frontend] Deploy to Cloud Run'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     args: 
       - 'gcloud'
       - 'run'
@@ -59,6 +62,7 @@ steps:
       - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/frontend'
       - '--platform=managed'
       - '--region=$LOCATION'
+      - '--port=80'
       - '--allow-unauthenticated'
 
 substitutions:
