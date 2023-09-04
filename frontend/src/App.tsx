@@ -8,8 +8,8 @@ function App() {
         Safe QR Codes
       </h1>
       <p>
-        This application will scan the QR codes in your documents and check if they
-        contain safe or unsafe URLs. 
+        This application will scan your documents and check if they contain QR codes.
+        The QR codes then will be checked if they contain safe or unsafe URLs. 
       </p>
       <FileUpload />
     </div>

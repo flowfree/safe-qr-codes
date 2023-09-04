@@ -40,7 +40,6 @@ export default function FileUpload() {
           setProgress(percentage)
         },
       })
-
       setData(data)
     } catch (error) {
       console.error(error)
