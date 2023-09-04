@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import DisplayResult, { QRCode } from './DisplayResult'
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
 
 export default function FileUpload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [progress, setProgress] = useState<number>(0)
+  const [data, setData] = useState<QRCode[]>([])
 
   function triggerFileInput() {
     const fileInput = document.getElementById('fileInput')
@@ -26,6 +28,8 @@ export default function FileUpload() {
     const formData = new FormData()
     formData.append('file', file)
 
+    setData([])
+
     try {
       const { data } = await axios.post(`${baseURL}/upload_file`, formData, {
         onUploadProgress: (progressEvent) => {
@@ -37,7 +41,7 @@ export default function FileUpload() {
         },
       })
 
-      console.log(data)
+      setData(data)
     } catch (error) {
       console.error(error)
     }
@@ -61,6 +65,7 @@ export default function FileUpload() {
       {selectedFile && (
         <p>Uploading {selectedFile.name} ({progress.toFixed(0)}%)</p>
       )}
+      <DisplayResult QRCodes={data} />
     </div>
   )
 }
