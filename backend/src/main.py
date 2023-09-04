@@ -9,12 +9,18 @@ import os
 from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
+from dotenv import load_dotenv
 import puremagic
 
 from .qrcodes import read_pdf, read_docx, read_image
+from .safe_urls import check_url
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+load_dotenv()
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
 
 app = FastAPI()
@@ -66,14 +72,23 @@ async def upload_file(file: UploadFile):
         }
 
         if file_type in functions:
-            data = functions[file_type](filename)
+            qr_codes = functions[file_type](filename)
         else:
             raise HTTPException(
                 status_code=400, 
                 detail='Unsupported file type'
             )
 
-        return data
-
     finally:
         os.remove(filename)
+
+    for qr_code in qr_codes:
+        if qr_code['data'].startswith('http'):
+            is_safe, threat_details = check_url(qr_code['data'], GOOGLE_API_KEY)
+        else:
+            is_safe, threat_details = True, []
+        
+        qr_code['isSafe'] = is_safe
+        qr_code['threatDetails'] = threat_details
+
+    return qr_codes
