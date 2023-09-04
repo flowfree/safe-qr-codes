@@ -3,11 +3,18 @@
 from datetime import datetime
 import uuid
 import shutil
+import io
 import os
 
 from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from PIL import Image
 import puremagic
+
+from .qrcodes import read_pdf, read_docx, read_image
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 app = FastAPI()
@@ -34,18 +41,6 @@ def home():
     }
 
 
-def read_pdf(filename):
-    return {'message': 'PDF file processed'}
-
-
-def read_docx(filename):
-    return {'message': 'DOCX file processed'}
-
-
-def read_image(filename):
-    return {'message': 'Image file processed'}
-
-
 @app.post('/upload_file')
 async def upload_file(file: UploadFile):
     try:
@@ -63,20 +58,22 @@ async def upload_file(file: UploadFile):
         with open(filename, 'wb') as f:
             shutil.copyfileobj(file.file, f)
 
-        supported_types = {
+        functions = {
             "application/pdf": read_pdf,
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document": read_docx,
             "image/jpeg": read_image,
             "image/png": read_image,
         }
 
-        if file_type in supported_types:
-            return supported_types[file_type](filename)
+        if file_type in functions:
+            data = functions[file_type](filename)
         else:
             raise HTTPException(
                 status_code=400, 
                 detail='Unsupported file type'
             )
+
+        return data
 
     finally:
         os.remove(filename)
