@@ -7,8 +7,10 @@ WORKDIR /app
 # Copy the requirements file into the container at /app
 COPY requirements.txt /app/
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Install system dependencies and the packages specified in requirements.txt
+RUN apt update && \
+    apt install --yes zbar-tools poppler-utils && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code into the container at /app
 COPY . /app/
