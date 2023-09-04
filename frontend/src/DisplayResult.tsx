@@ -18,7 +18,7 @@ export default function DisplayResult({ QRCodes }: Props) {
             <img src={`data:image/png;base64,${item.image}`} className="w-[100px]" alt="" />
             <div>
               <p className="mb-2">
-                <a href={item.data} className={item.isSafe ? 'text-green-700' : 'text-red-700'} target="_blank">
+                <a href={item.data} className={'hover:underline ' + (item.isSafe ? 'text-green-700' : 'text-red-700')} target="_blank">
                   {item.data}
                 </a>
               </p>
